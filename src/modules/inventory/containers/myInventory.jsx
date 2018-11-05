@@ -12,6 +12,7 @@ import * as actions from "appRedux/actions";
 import * as actionsManageDevice from "appRedux/inventory/actions/inventory";
 import UnassignDevice from "modules/inventory/components/UnassignDevice";
 import AssignDevice from "modules/inventory/components/AssignDevice";
+import _ from "lodash";
 
 class MyInventory extends React.Component {
   constructor(props) {
@@ -27,7 +28,8 @@ class MyInventory extends React.Component {
       unassignDeviceList: [],
       activeAuditId: "",
       auditMsg: "",
-      activeItemName:""
+      activeItemName:"",
+      show_alert_message: true,
     };
     this.props.onIsAlreadyLogin();
     this.callUpdateUserDeviceDetails = this.callUpdateUserDeviceDetails.bind(
@@ -53,8 +55,16 @@ class MyInventory extends React.Component {
     }
     this.setState({
       user_profile_detail: props.myProfile.user_profile_detail,
-      user_assign_machine: props.myProfile.myInventory
+      user_assign_machine: props.myProfile.myInventory,
+      show_alert_message:true
     });
+      if(props && props.myProfile && props.myProfile.myInventory){
+        _.map(props.myProfile.myInventory,(val)=>{
+          if(!val.audit_current_month_status.status){
+            this.setState({show_alert_message:false});
+          }
+        })
+      }
   }
 
   callUpdateUserDeviceDetails(newDeviceDetails) {
@@ -111,9 +121,20 @@ class MyInventory extends React.Component {
       activeItemName: val.machine_name
     });
   };
-
+  handleAuditSubmit = (activeAuditId, auditMsg) =>{
+    this.props.onAddAuditComment(activeAuditId, auditMsg)
+    .then(res => {
+      this.props.onGetMyInventory();
+      $("#modalAudit").modal("hide");
+      this.setState({
+        activeAuditId: "",
+        auditMsg: "",
+        activeItemName: ""
+      });
+    });
+  }
   render() {
-    const { auditMsg, activeAuditId, activeItemName } = this.state;
+    const { auditMsg, activeAuditId, activeItemName, show_alert_message } = this.state;
     return (
       <div>
         <Menu {...this.props} />
@@ -143,6 +164,7 @@ class MyInventory extends React.Component {
                       Message
                     </label>
                     <div className="col-sm-9">
+                      <small className="text-red-np"><i>Add a short description about inventory. Eg. Working fine, keys not working, etc.</i></small>
                       <input
                         type="text"
                         className="form-control"
@@ -152,8 +174,17 @@ class MyInventory extends React.Component {
                             auditMsg: e.target.value
                           })
                         }
+                        onKeyUp={e=>{
+                          if(e.keyCode===13){
+                            if(auditMsg!=""){
+                              this.handleAuditSubmit(activeAuditId, auditMsg);
+                            }
+                          }
+                          
+                        }}
                         required
                       />
+                      {auditMsg ==="" ? <small className="text-red-np"> Please write something</small> : null}
                     </div>
                   </div>
                   <div className="form-group row m-t-md">
@@ -161,17 +192,9 @@ class MyInventory extends React.Component {
                       <button
                         className="md-btn md-raised m-b-sm w-xs blue"
                         onClick={() => {
-                          this.props
-                            .onAddAuditComment(activeAuditId, auditMsg)
-                            .then(res => {
-                              this.props.onGetMyInventory();
-                              $("#modalAudit").modal("hide");
-                              this.setState({
-                                activeAuditId: "",
-                                auditMsg: "",
-                                activeItemName: ""
-                              });
-                            });
+                          if(auditMsg!=""){
+                            this.handleAuditSubmit(activeAuditId, auditMsg);
+                          }
                         }}
                       >
                         Submit
@@ -184,13 +207,15 @@ class MyInventory extends React.Component {
           </div>
           <div className="app-body" id="view">
             <div className="padding">
-              <div className="row no-gutter m-b-md">
-                <UserHorizontalView
-                  profileImage={this.props.loggedUser.data.profileImage}
-                  name={this.state.user_profile_detail.name}
-                  jobtitle={this.state.user_profile_detail.jobtitle}
-                  inventory
-                />
+              <div className="row no-gutter">
+                {!show_alert_message?
+                <div className="col-xs-12 text-red bg-white">
+                  <h6>Important:</h6>
+                  <h6>-Your monthly audit of inventories is pending.</h6>
+                  <h6>-Click on Audit Pending button to do audit of an inventory.</h6>
+                  <h6>-Once you are done with all the inventories you will be able to access rest of HR app.</h6>
+                </div> 
+                :null}
               </div>
               <AssignDevice
                 handleCloseAssign={this.handleCloseAssign}

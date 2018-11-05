@@ -12,11 +12,15 @@ import UsersList from 'components/generic/UsersList';
 import UsersListHeader from 'components/generic/UsersListHeader';
 import UserSalaryHistory from 'components/salary/manageSalary/UserSalaryHistory';
 import UserHoldingHistory from 'components/salary/manageSalary/UserHoldingHistory';
+import UserHistoryHolding from 'components/salary/manageSalary/UserHistoryHolding';
 import FormAddHolding from 'modules/salary/components/manageSalary/FormAddHolding';
 import FormAddSalary from 'modules/salary/components/manageSalary/FormAddSalary';
+import AddHoldingForm from 'modules/salary/components/manageSalary/AddHoldingForm';
+import AddSalaryForm from 'modules/salary/components/manageSalary/AddSalaryForm';
 import * as actions from 'appRedux/actions';
 import * as actions_usersList from 'appRedux/generic/actions/usersList';
 import * as actions_manageSalary from 'appRedux/salary/actions/manageSalary';
+import SalaryBlock from "components/generic/SalaryBlock";
 
 class ManageSalary extends React.Component {
   constructor (props) {
@@ -61,8 +65,7 @@ class ManageSalary extends React.Component {
     let s_user_latest_holding_details = {};
 
     if (typeof props.manageSalary.salary_structure.salary_details !== 'undefined' && props.manageSalary.salary_structure.salary_details.length > 0) {
-      s_salary_history = props.manageSalary.salary_structure.salary_details.reverse();
-      s_user_latest_salary_details = s_salary_history[0];
+      s_salary_history = _.sortBy(props.manageSalary.salary_structure.salary_details, "date").reverse();
     }
     if (typeof props.manageSalary.salary_structure.holding_details !== 'undefined' && props.manageSalary.salary_structure.holding_details.length > 0) {
       s_holding_history = props.manageSalary.salary_structure.holding_details.reverse();
@@ -76,9 +79,13 @@ class ManageSalary extends React.Component {
     if (this.state.defaultUserDisplay == '') {
       if (this.props.usersList.users.length > 0) {
         let firstUser = this.props.loggedUser.data.role == CONFIG.HR ? this.state.subList[0] : this.props.usersList.users[0];
-        let defaultUserId = firstUser.user_Id;
+        let selectedUser = this.props.location.query.selectedUser
+        let defaultUserId = selectedUser || firstUser.user_Id;
         this.onUserClick(defaultUserId);
       }
+    }
+    if(this.props.manageSalary.status_message !== ''){
+      notify(this.props.manageSalary.status_message);
     }
   }
 
@@ -97,6 +104,7 @@ class ManageSalary extends React.Component {
         selected_user_jobtitle = userDetails.jobtitle;
         selected_user_id = userDetails.user_Id;
         selected_user_date_of_joining = userDetails.dateofjoining;
+        this.props.router.push('manage_salary?selectedUser='+userDetails.user_Id)
       }
     }
     this.setState({
@@ -124,7 +132,8 @@ class ManageSalary extends React.Component {
       notify(error);
     });
   }
-  viewSalarySummary (id) {
+  viewSalarySummary (e, id) {
+    e.stopPropagation();
     let new_details = this.state.salary_details;
     _.forEach(this.state.salary_history, (d, k) => {
       if (d.test.id == id) {
@@ -133,7 +142,8 @@ class ManageSalary extends React.Component {
     });
     this.setState({'user_latest_salary_details': new_details});
   }
-  callDeleteUserSalary (user_id, salary_id) {
+  callDeleteUserSalary (e, user_id, salary_id) {
+    e.stopPropagation();
     this.props.onDeleteUserSalary(user_id, salary_id).then((data) => {
       this.onUserClick(user_id);
     }, (error) => {
@@ -142,16 +152,24 @@ class ManageSalary extends React.Component {
   }
 
   render () {
-    let status_message = '';
-    if (this.props.manageSalary.status_message != '') {
-      status_message = <span className="label label-lg primary pos-rlt m-r-xs">
-        <b className="arrow left b-primary"></b>{this.props.manageSalary.status_message}</span>;
+    let data;
+    const message = this.state.msg;
+    if (message) {
+      data = (<div className="well well-lg" style={{'color':"red"}} >
+        <i className="fa fa-exclamation-triangle fa-3x" aria-hidden="true"></i>
+        {message} </div>)
+    }else {
+      data = this.state.salary_history.map((item, index) => {
+        return (
+          <SalaryBlock key={index} item={item} displayPage="manage" viewSalarySummary={this.viewSalarySummary} callDeleteUserSalary={this.callDeleteUserSalary} />
+        )
+      });
     }
     return (
       <div>
         <Menu {...this.props} />
         <div id="content" className="app-content box-shadow-z0" role="main">
-          <Header pageTitle={'Manage Salaries' + status_message} showLoading={this.props.frontend.show_loading} userListHeader />
+          <Header pageTitle={'Manage Salaries'} showLoading={this.props.frontend.show_loading} userListHeader />
           <UsersListHeader users={this.props.usersList.users} selectedUserId={this.state.selected_user_id} onUserClick={this.onUserClick} />
           <div className="app-body" id="view">
             <div className="padding">
@@ -162,13 +180,38 @@ class ManageSalary extends React.Component {
                 <div className="col-md-10 col-sm-12 col-xs-12">
                   <div className="box m-t-xs">
                     <div className="p-a text-center">
-                      <a href="" className="text-md m-t block">{this.state.selected_user_name}</a>
+                      <div className="text-md m-t block">{this.state.selected_user_name}</div>
                       <p>
                         <small>{this.state.selected_user_jobtitle}</small>
                       </p>
                     </div>
                   </div>
-                  <div className="row no-gutter b-t box">
+                  <div className="box m-t-xs">
+                    {/* <div className="p-a block ">
+                      <h6 className="text-center">Add New</h6>
+                      <hr />
+                      <AddSalaryForm {...this.props} userid={this.state.selected_user_id} callAddUserSalary={this.callAddUserSalary} user_latest_salary_details={this.state.user_latest_salary_details}/>
+                    </div> */}
+                    <div className="p-a block ">
+                      <h6 className="text-center">Salary Revision</h6>
+                      <hr />
+                      <div className="content-salary">
+                        {data}
+                        <AddSalaryForm {...this.props} userid={this.state.selected_user_id} callAddUserSalary={this.callAddUserSalary} user_latest_salary_details={this.state.user_latest_salary_details}/>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="box m-t-xs">
+                    <div className="p-a block ">
+                      <h6 className="text-center">Holding Revision</h6>
+                      <hr />
+                      <div className="content-salary">
+                        <UserHistoryHolding data={this.state.holding_history} />
+                        <AddHoldingForm {...this.props} userid={this.state.selected_user_id} callAddUserHolding={this.callAddUserHolding} user_latest_salary_details={this.state.user_latest_salary_details}/>
+                      </div>
+                    </div>
+                  </div>
+                  {/* <div className="row no-gutter b-t box">
                     <div className="col-md-3 col-sm-4 col-xs-12 b-r box">
                       <div className="p-a block ">
                         <h6 className="text-center">Salary Revision</h6>
@@ -193,7 +236,7 @@ class ManageSalary extends React.Component {
                         <FormAddHolding {...this.props} userid={this.state.selected_user_id} callAddUserHolding={this.callAddUserHolding} user_latest_salary_details={this.state.user_latest_salary_details} />
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

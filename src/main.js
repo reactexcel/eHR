@@ -56,6 +56,8 @@ import UserDocumentDetails from './modules/manageUsers/components/Userdocuments'
 import store from './store';
 import Page_InventoryOverview from './modules/inventoryOverview/container/inventoryOverviewContainer.jsx';  
 import RouterAddInventorySystem from './modules/inventory/components/AddInventory'
+import Page_Audit_Inventory from "./modules/inventory/components/AuditInventoryList";
+import ContainerHealthStats from './modules/healthStats/container/ContainerHealthStats';
 // import APP from './App';
 
 // -for iPhone iPad safari engine
@@ -122,8 +124,10 @@ let render = (routerKey = null) => {
             <Route path="inventory_system/:device" component={InventorySystem}/>
             <Route path="attendanceReq" component={Page_AttendanceReq} />
             <Route path="inventoryOverviewDetail" component={Page_InventoryOverview}/>
+            <Route path="audit_inventory_list" component={Page_Audit_Inventory}/>
             <Route path="add_documents" component = {Page_AddDocuments} />
             <Route path="add_documents/*" component = {Page_FormAddDocuments} />
+            <Route path="health_stats" component = {ContainerHealthStats} />
 
             <Route path="addInventory" component={RouterAddInventorySystem}/>
             <Route path="add_new_employee" component={AddNewEmployee}/>

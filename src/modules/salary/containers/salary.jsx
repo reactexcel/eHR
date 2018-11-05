@@ -1,32 +1,33 @@
 import React from 'react';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import * as _ from 'lodash';
 import Menu from 'components/generic/Menu';
-import {isNotUserValid} from 'src/services/generic';
+import { isNotUserValid } from 'src/services/generic';
 import Header from 'components/generic/Header';
 import SalaryDetails from 'modules/salary/components/userSalary/SalaryDetails';
 import SalaryHistory from 'components/salary/userSalary/SalaryHistory';
 import PayslipHistory from 'components/salary/userSalary/PayslipHistory';
 import * as actions from 'appRedux/actions';
 import * as actions_salary from 'appRedux/salary/actions/viewSalary';
+import SalaryBlock from "components/generic/SalaryBlock";
 
 class Salary extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.props.onIsAlreadyLogin();
     this.viewSalarySummary = this.viewSalarySummary.bind(this);
     this.state = {
-      view_salary_id:  false,
-      salary_details:  {},
-      holding_amt:     '',
+      view_salary_id: false,
+      salary_details: {},
+      holding_amt: '',
       payslip_history: []
     };
   }
-  componentWillMount () {
+  componentWillMount() {
     this.props.onSalaryDetails();
   }
-  componentWillReceiveProps (props) {
+  componentWillReceiveProps(props) {
     let isNotValid = isNotUserValid(this.props.route.path, props.loggedUser);
     if (isNotValid.status) {
       this.props.router.push(isNotValid.redirectTo);
@@ -47,19 +48,27 @@ class Salary extends React.Component {
       }
     }
 
-    this.setState({salary_details: s_salary_details, salary_history: s_salary_history, payslip_history: s_payslip_history});
+    this.setState({ salary_details: s_salary_details, salary_history: s_salary_history, payslip_history: s_payslip_history });
   }
 
-  viewSalarySummary (id) {
+  viewSalarySummary(id) {
     let new_details = this.state.salary_details;
     _.forEach(this.state.salary_history, (d, k) => {
       if (d.test.id === id) {
         new_details = d;
       }
     });
-    this.setState({'salary_details': new_details});
+    this.setState({ 'salary_details': new_details });
   }
-  render () {
+  render() {
+    let data;
+    if (this.props.salary.salary_history) {
+      data = this.props.salary.salary_history.map((item, index) => {
+        return (
+          <SalaryBlock key={index} item={item} /> 
+        )
+      });
+    }
     return (
       <div >
         <Menu {...this.props} />
@@ -70,19 +79,14 @@ class Salary extends React.Component {
               <div className="box">
                 <div className="box-divider m-a-0"></div>
                 <div className="box-body">
-                  <div className="row">
-                    <div className="col-sm-6 col-xs-12" id={'salaryDetail'}>
-                      <h6 className="text-center">Salary Details</h6>
-                      <SalaryDetails holdingAmount={this.state.holding_amt} data={this.state.salary_details} />
-                    </div>
-                    <div className="col-sm-3 col-xs-6 salary-border-left" id={'salaryRevision'}>
-                      <h6 className="text-center">Salary Revisions</h6>
-                      <h6 className="text-center" >(Click on Salary for details)</h6>
-                      <hr />
-                      <SalaryHistory data={this.props.salary.salary_history} viewSalarySummary={this.viewSalarySummary} />
-                    </div>
-                    <div className="col-sm-3 col-xs-6 salary-border-left" id={'payslips'}>
-                          <h6 className="text-center">Previous Payslips</h6>
+                  <div className="content-salary my-salary">
+                    <h6 className="salary-block-title">Salary Details</h6>
+                    <hr />
+                    {data}
+                  </div>
+                  <div className="row payslips">
+                    <div className="col-sm-12 col-xs-12" id={'payslips'}>
+                      <h6 className="salary-block-title">Previous Payslips</h6>
                       <hr />
                       <PayslipHistory payslip_history={this.state.payslip_history} />
                     </div>
@@ -92,7 +96,7 @@ class Salary extends React.Component {
             </div>
           </div>
         </div>
-      </div>
+      </div >
     );
   }
 }
@@ -103,11 +107,11 @@ Salary.styles = {
   }
 };
 
-function mapStateToProps (state) {
+function mapStateToProps(state) {
   return {
-    frontend:   state.frontend.toJS(),
+    frontend: state.frontend.toJS(),
     loggedUser: state.logged_user.userLogin,
-    salary:     state.salary.toJS()
+    salary: state.salary.toJS()
   };
 }
 const mapDispatchToProps = (dispatch) => {
