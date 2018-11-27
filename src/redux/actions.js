@@ -181,3 +181,29 @@ export const requestStatsLeaveHistory = createAction(constants.REQUEST_STATS_LEA
 export const successStatsLeaveHistory = createAction(constants.SUCCESS_STATS_LEAVE_HISTORY);
 export const errorStatsLeaveHistory = createAction(constants.ERROR_STATS_LEAVE_HISTORY);
 export const updateFlag = createAction(constants.UPDATE_FLAG);
+
+export const requestGetAttendanceUploadSetting = createAction(constants.REQUEST_GET_ATTANDANCE_UPLOAD_SETTING);
+export const successGetAttendanceUploadSetting = createAction(constants.SUCCESS_GET_ATTANDANCE_UPLOAD_SETTING);
+export const errorGetAttendanceUploadSetting = createAction(constants.ERROR_GET_ATTANDANCE_UPLOAD_SETTING);
+
+export const requestAddAttendanceUploadSetting = createAction(constants.REQUEST_ADD_ATTANDANCE_UPLOAD_SETTING);
+export const successAddAttendanceUploadSetting = createAction(constants.SUCCESS_ADD_ATTANDANCE_UPLOAD_SETTING);
+export const errorAddAttendanceUploadSetting = createAction(constants.ERROR_ADD_ATTANDANCE_UPLOAD_SETTING);
+
+export const requestDeleteAttendanceUploadSetting = createAction(constants.REQUEST_DELETE_ATTANDANCE_UPLOAD_SETTING);
+export const successDeleteAttendanceUploadSetting = createAction(constants.SUCCESS_DELETE_ATTANDANCE_UPLOAD_SETTING);
+export const errorDeleteAttendanceUploadSetting = createAction(constants.ERROR_DELETE_ATTANDANCE_UPLOAD_SETTING);
+
+export const requestResetPasswordSetting = createAction(constants.REQUEST_RESET_PASSWORD_SETTING);
+export const successResetPasswordSetting = createAction(constants.SUCCESS_RESET_PASSWORD_SETTING);
+export const errorrResetPasswordSetting = createAction(constants.ERROR_RESET_PASSWORD_SETTING);
+
+export const requestResetPasswordStatus = createAction(constants.REQUEST_RESET_PASSWORD_STATUS);
+export const successResetPasswordStatus = createAction(constants.SUCCESS_RESET_PASSWORD_STATUS);
+export const errorrResetPasswordStatus = createAction(constants.ERROR_RESET_PASSWORD_STATUS);
+
+export const requestClearResetPasswordData = createAction(constants.REQUEST_CLEAR_RESET_PASSWORD_DATA);
+export const successClearResetPasswordData = createAction(constants.SUCCESS_CLEAR_RESET_PASSWORD_DATA);
+
+export const showInventoryPending = createAction(constants.SHOW_INVENTOEY_PENDING); 
+
