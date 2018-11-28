@@ -8,16 +8,16 @@ import RHLeavesList from "components/leave/RHLeaveList/RHLeaveList"
 
 class RHLeaves extends React.Component {
   render() {
-    const { yearArray,RHLeaveList } = this.props;
+    const { yearArray,RHLeaveList,handleApplyClick } = this.props;
     let img = <img src='./socialMediaIcons/holidays.svg' className="w-40 img-circle m-x-md" />;
     return (
       <div className="row rh-leaves">
-        <div className="col-md-12" style={{ float: "left" }}>
+        <div className="col-md-12">
           <div
             className="col-md-12"
             style={{ paddingLeft: "1px", padding: "0px",display:"flex" }}
-          > <div className="col-md-8 rh-text"><b>RH Leaves</b></div>
-          <div className="col-md-4 rh-select">
+          > <div className="col-md-8 col-xs-8 rh-text"><b>RH Leaves</b></div>
+          <div className="col-md-4 col-xs-4 rh-select">
             <select
               className="form-control"
               onChange={this.props.handleYearChange}
@@ -42,6 +42,7 @@ class RHLeaves extends React.Component {
                   leave={leave}
                   handleApply={this.handleApply}
                   cancelLeave={this.cancelLeave}
+                  handleApplyClick={handleApplyClick}
                 />
               );
             }):<h2>{img} No RH This Year.</h2>}
