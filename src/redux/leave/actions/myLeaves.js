@@ -17,7 +17,12 @@ export function list_my_leaves_empty (data) {
 export function list_my_leaves_error (err) {
   return createAction(constants.ACTION_LIST_MY_LEAVES_ERROR)('Error Occurs !!');
 }
-
+export function getRHLeavesListSuccess(data){    
+  return createAction(constants.REQUEST_RH_LIST_SUCCESS)(data)
+}
+export function getRHLeavesListError(error){
+  return createAction(constants.REQUEST_RH_LIST_ERROR)('Error Occurs !!')
+}
 function async_getMyLeaves () {
   return fireAjax('POST', '', {
     'action': 'get_my_leaves'
@@ -72,6 +77,37 @@ export function cancelLeave (userId, from_date) {
   reject(json.data.message);
 }
 			);
+    });
+  };
+}
+
+
+function async_getRHList (year) {
+  return fireAjax('POST', '', {
+    'action':  'get_my_rh_leaves',
+    'year': year,
+  });
+}
+
+export function getRHList(year) {
+  return function (dispatch, getState) {
+    return new Promise((reslove, reject) => {
+      dispatch(show_loading()); // show loading icon
+      async_getRHList(year).then(
+        (json) => {
+          dispatch(hide_loading()); // hide loading icon
+          if (json.error == 0) {
+            dispatch(getRHLeavesListSuccess(json.data));
+          } else {
+            reject(json.data.message);
+          }
+        },
+        (error) => {
+          dispatch(hide_loading()); // hide loading icon\
+          dispatch(getRHLeavesListError())
+          reject("error occurs");
+        }
+      );
     });
   };
 }
