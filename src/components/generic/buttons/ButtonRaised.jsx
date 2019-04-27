@@ -5,11 +5,11 @@ const ButtonRaised = ({label, style, id, className, onClick, disabled}) => {
   let classname = 'md-btn md-raised ' + className;
   let idName = id !== undefined ? id : '';
   return (
-    <button className={classname} style={style} id={idName} onTouchTap={onClick} disabled={disabled}>{label}</button>
+    <button className={classname} style={style} id={idName} onClick={onClick} disabled={disabled}>{label}</button>
   );
 };
 
-ButtonRaised.PropTypes = {
+ButtonRaised.propTypes = {
   label: PropTypes.string.isRequired,
   style: PropTypes.object,
   className: PropTypes.string,

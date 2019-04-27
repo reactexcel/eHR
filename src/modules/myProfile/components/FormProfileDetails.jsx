@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {DateField} from 'react-date-picker';
-import {ButtonRaised} from 'components/generic/buttons/index';
-import 'react-date-picker/index.css';
+// import {DateField} from 'react-date-picker';
+// import DateField from 'react-date-picker';
+import {ButtonRaised} from '../../../components/generic/buttons/index';
+// import 'react-date-picker/index.css';
 
 class FormProfileDetails extends React.Component {
   constructor (props) {
@@ -66,11 +67,7 @@ class FormProfileDetails extends React.Component {
               <option value="Married">Married</option>
               <option value="Other">Other</option>
             </select>
-          </div>
-          <div className="col-xs-6 col-sm-12 profile-input form-group">
-            <label>Date of Birth</label>
-            <DateField dateFormat="YYYY-MM-DD" value={this.state.dob} onChange={(date) => { this.setState({dob: date}); }} className="form-control" />
-          </div>
+          </div>            
         </div>
         <div className="row no-gutter">
           <div className="col-xs-6 profile-input">

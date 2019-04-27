@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import UsersList from 'components/generic/UsersList';
+import UsersList from '../../components/generic/UsersList';
 
 const UsersListHeader = ({users, selectedUserId, onUserClick, disabledUser}) => {
   return (
@@ -18,7 +18,7 @@ const UsersListHeader = ({users, selectedUserId, onUserClick, disabledUser}) => 
   );
 };
 
-UsersList.PropTypes = {
+UsersList.propTypes = {
   users:          PropTypes.array.isRequired,
   selectedUserId: PropTypes.oneOfType([
     PropTypes.string,

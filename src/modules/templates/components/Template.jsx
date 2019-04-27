@@ -2,22 +2,23 @@ import React from 'react';
 import _ from 'lodash';
 import {connect} from 'react-redux';
 import RichTextEditor from 'react-rte';
-import update from 'react/lib/update';
+// import update from 'react/lib/update';
 import Paper from 'material-ui/Paper';
-import {CONFIG} from 'src/config/index';
+import {CONFIG} from '../../../config/index';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
-import {confirm} from 'src/services/notify';
+import {confirm} from '../../../services/notify';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import LinearProgress from 'material-ui/LinearProgress';
 import Delete from 'material-ui/svg-icons/action/delete';
-import LoadingIcon from 'components/generic/LoadingIcon';
-import EditableDiv from 'components/editor/EditableDiv';
-import FilterLabel from 'components/template/FilterLabel';
-import {getToken} from 'src/services/generic';
+import LoadingIcon from '../../../components/generic/LoadingIcon';
+// import EditableDiv from '../../../components/editor/EditableDiv';
+import FilterLabel from '../../../components/template/FilterLabel';
+import {getToken} from '../../../services/generic';
+import $ from 'jquery';
 var FormData = require('form-data');
 var moment = require('moment');
 
@@ -77,11 +78,11 @@ class Variables extends React.Component {
   componentWillReceiveProps (props) {
     window.scrollTo(0, 0);
     if (!props.loggedUser.isLoggedIn) {
-      this.props.router.push('/logout');
+      this.props.history.push('/logout');
     } else {
       if (props.loggedUser.data.role == CONFIG.ADMIN || props.loggedUser.data.role == CONFIG.HR) {
       } else {
-        this.props.router.push('/home');
+        this.props.history.push('/home');
       }
     }
     this.setState({usersList: props.employee.employee});
@@ -215,7 +216,7 @@ class Variables extends React.Component {
             } else if (variable.name === '#employee_email_id') {
               value = recipient.work_email;
             } else if (variable.name === '#page_break') {
-              value = "<div style='page-break-after:always;'></div>";
+              value = variable.value; //"<div style='page-break-after:always;'></div>";
             } else if (variable.name === '#employee_user_id') {
               value = recipient.user_Id;
             } else if (variable.name === '#employee_number') {
@@ -528,11 +529,11 @@ class Variables extends React.Component {
       fileList.push(<div key={key}>{name}<i onClick={() => this.deleteAttachment(key)} className="fa fa-remove uploaded-pdf-block-style cross-button-style"></i></div>);
     });
     const actionsCreateTemplate = [
-      <FlatButton label="Close" className="m-r-5" primary onTouchTap={this.handleCloseDialog} />,
+      <FlatButton label="Close" className="m-r-5" primary onClick={this.handleCloseDialog} />,
       <RaisedButton label={_.isEmpty(this.state.templateId) ? 'SAVE' : 'Update'} primary onClick={this.saveTemplate} />
     ];
     const actionsSendMail = [
-      <FlatButton label="Close" primary onTouchTap={this.handleCloseDialog} />,
+      <FlatButton label="Close" primary onClick={this.handleCloseDialog} />,
       <RaisedButton label={'Preview'} primary onClick={this.openMailPreview} />
     ];
 
@@ -689,7 +690,7 @@ class Variables extends React.Component {
             >
             <Dialog
               title={'Enter values'}
-              actions={[ <FlatButton label="Close" primary onTouchTap={this.handleClose} style={{marginRight: 5}} />,
+              actions={[ <FlatButton label="Close" primary onClick={this.handleClose} style={{marginRight: 5}} />,
                 <RaisedButton label={'Set Variables'} primary onClick={this.setVariable} />]}
               modal={false}
               bodyClassName="template-dialog-style"
@@ -704,7 +705,7 @@ class Variables extends React.Component {
             <Dialog
               title={'Mail Preview'}
               titleClassName="templates-dialog-title"
-              actions={[<FlatButton label="Cancel" primary onTouchTap={this.closeMailPreview} style={{marginRight: 5}} />,
+              actions={[<FlatButton label="Cancel" primary onClick={this.closeMailPreview} style={{marginRight: 5}} />,
                 <RaisedButton label={'Continue'} primary onClick={this.sendMail} />,
                 <FlatButton label={'Download Preview'} primary style={{'float': 'left'}} onClick={(e) => { this.download_mail_preview(e); }} />]}
               modal={false}

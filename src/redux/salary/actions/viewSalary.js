@@ -1,10 +1,10 @@
 import {createAction} from 'redux-actions';
 import * as _ from 'lodash';
-import {CONFIG} from 'src/config/index';
-import {fireAjax} from 'src/services/index';
+import {CONFIG} from '../../../config/index';
+import {fireAjax} from '../../../services/index';
 import 'whatwg-fetch';
-import {show_loading, hide_loading} from 'appRedux/generic/actions/frontend';
-import * as constants from 'appRedux/constants';
+import {show_loading, hide_loading} from '../../../redux/generic/actions/frontend';
+import * as constants from '../../../redux/constants';
 
 export function success_salary_details (data) {
   return createAction(constants.ACTION_SUCCESS_SALARY_DETAILS)(data);
@@ -26,7 +26,6 @@ export function getSalaryDetails () {
       dispatch(show_loading()); // show loading icon
       async_get_salary_details().then((json) => {
         dispatch(hide_loading()); // hide loading icon
-        console.log('json', json);
         if (typeof json.data !== 'undefined' && typeof json.data.salary_details !== 'undefined') {
           // let data = json.data.salary_details.reverse()
           // dispatch( success_salary_details( data ) )

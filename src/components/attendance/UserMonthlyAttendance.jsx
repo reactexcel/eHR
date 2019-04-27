@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import * as _ from 'lodash';
-import UserDetails from 'components/generic/UserDetails';
-import CalendarStructure from 'components/generic/employeeMonthGrid/CalendarStructure';
+import UserDetails from '../../components/generic/UserDetails';
+import CalendarStructure from '../../components/generic/employeeMonthGrid/CalendarStructure';
 import MonthSummary from './MonthSummary';
 
 const UserMonthlyAttendance = ({monthlyAttendance, monthToggle, onShowDaySummary}) => {
@@ -59,7 +59,7 @@ const UserMonthlyAttendance = ({monthlyAttendance, monthToggle, onShowDaySummary
   );
 };
 
-UserMonthlyAttendance.PropTypes = {
+UserMonthlyAttendance.propTypes = {
   monthlyAttendance: PropTypes.shape({
     userid:        PropTypes.number.isRequired,
     previousMonth: PropTypes.object.isRequired,

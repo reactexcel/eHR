@@ -1,8 +1,8 @@
 import React from 'react';
 import * as _ from 'lodash';
 import PropTypes from 'prop-types';
-import 'react-date-picker/index.css';
-import {ButtonRaised} from 'components/generic/buttons/index';
+// import 'react-date-picker/index.css';
+import {ButtonRaised} from '../../../components/generic/buttons/index';
 
 class FormBankDetails extends React.Component {
   constructor (props) {
@@ -71,7 +71,7 @@ class FormBankDetails extends React.Component {
   }
 }
 
-FormBankDetails.PropTypes = {
+FormBankDetails.propTypes = {
   bank_account_no: PropTypes.number,
   bank_name:       PropTypes.string,
   bank_address:    PropTypes.string,

@@ -1,10 +1,11 @@
 import React from "react";
 import * as _ from "lodash";
 import { DateField } from "react-date-picker";
-import ButtonRaised from "components/generic/buttons/ButtonRaised";
-import { confirm } from "src/services/notify";
-import InputText from "components/generic/input/InputText";
-import RHLeavesList from "components/leave/RHLeaveList/RHLeaveList"
+// import ButtonRaised from "components/generic/buttons/ButtonRaised";
+// import { confirm } from "src/services/notify";
+// import InputText from "components/generic/input/InputText";
+import RHLeavesList from "../../../../components/leave/RHLeaveList/ApplyModal"
+// "../../../components/leave/RHLeaveList/RHLeaveList"
 
 class RHLeaves extends React.Component {
   render() {

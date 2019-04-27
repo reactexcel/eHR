@@ -1,8 +1,8 @@
 import React from 'react';
 import * as _ from 'lodash';
-import { DateField } from 'react-date-picker';
-import 'react-date-picker/index.css';
-import { ButtonRaised } from 'components/generic/buttons';
+import moment from 'moment';
+import DatePicker from 'react-date-picker';
+import { ButtonRaised } from '../../../../components/generic/buttons';
 
 
 class AddSalaryForm extends React.Component {
@@ -30,17 +30,10 @@ class AddSalaryForm extends React.Component {
       misc_deduction: '0',
       tds: '0',
     }
-    this.handleApplicableFrom = this.handleApplicableFrom.bind(this);
-    this.handleApplicableTill = this.handleApplicableTill.bind(this);
   }
-  handleApplicableFrom(date) {
+  handleApplicableFrom = (date) => {
     this.setState({
       applicable_from: date
-    });
-  }
-  handleApplicableTill(date) {
-    this.setState({
-      applicable_till: date
     });
   }
 
@@ -68,7 +61,13 @@ class AddSalaryForm extends React.Component {
       this.setState({
         total_earning: n_total_earning,
         total_salary: n_total_salary,
-        total_deduction: n_total_deduction
+        total_deduction: n_total_deduction,
+        increment_amount: 
+          this.props.latest_salary_literally 
+          && this.props.latest_salary_literally.test 
+          && this.props.latest_salary_literally.test.total_salary
+          ? n_total_salary - this.props.latest_salary_literally.test.total_salary
+          : 0
       })
     }
   }
@@ -93,7 +92,9 @@ class AddSalaryForm extends React.Component {
     if(props.user_latest_salary_details){
       if (typeof props.user_latest_salary_details.test != 'undefined') {
         if (typeof props.user_latest_salary_details.test.applicable_from != 'undefined') {
-          //applicable_from = props.user_latest_salary_details.test.applicable_from
+          console.log('props.user_latest_salary_details.test.applicable_from', props.user_latest_salary_details.test.applicable_from);
+          
+          applicable_from = new Date(props.user_latest_salary_details.test.applicable_from)
         }
         if (typeof props.user_latest_salary_details.test.applicable_till != 'undefined') {
           //applicable_till = props.user_latest_salary_details.test.applicable_till
@@ -163,6 +164,16 @@ class AddSalaryForm extends React.Component {
     }
   }
 
+  addSalary = () => {
+    let dataObject = _.cloneDeep(this.state);
+    dataObject.applicable_from = moment(dataObject.applicable_from).format('YYYY-MM-DD');
+    this.props.callAddUserSalary(dataObject)
+  }
+  
+  onValueChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+
   render() {
     let styles = _.cloneDeep(this.constructor.styles);
     let date = this.state.applicable_from;
@@ -175,7 +186,7 @@ class AddSalaryForm extends React.Component {
         <div className="col-md-12 col-sm-12 salary-range-wrapper">
           <div className="applicable-from">
             <span className="salary-title">Applicable From : </span>
-            <DateField dateFormat="YYYY-MM-DD" onChange={this.handleApplicableFrom} className="form-control date-field" />
+            <DatePicker dateFormat="YYYY-MM-DD" onChange={this.handleApplicableFrom} className="form-control date-field" value={this.state.applicable_from}/>
           </div>
           <div className="applicable-till">
             <span className="salary-title">Applicable Months : </span>
@@ -190,7 +201,7 @@ class AddSalaryForm extends React.Component {
           </div>
           <div className="incremented-value">
             <span className="salary-title">Incremented Amount : </span>
-            <input type="text" className="form-control" onChange={(e) => this.setState({ increment_amount: e.target.value })} value={this.state.increment_amount} />
+            <input type="text" className="form-control" onChange={(e) => this.setState({ increment_amount: e.target.value })} value={this.state.increment_amount} readOnly />
           </div>
         </div>
         <div className="col-md-12 salary-col-padding salary-add-details">
@@ -206,37 +217,37 @@ class AddSalaryForm extends React.Component {
             <div className="col-sm-2 cell salary-basic-width">
               <div className="col-sm-12 salary-title">Basic</div>
               <div className="col-sm-12 salary-input-wrapper">
-                <input type="text" className="form-control input-sm" ref="basic" onChange={() => this.setState({ basic: this.refs.basic.value })} value={this.state.basic} />
+                <input name="basic" type="text" className="form-control input-sm" ref="basic" onChange={this.onValueChange} /* onChange={() => this.setState({ basic: this.refs.basic.value })} */ value={this.state.basic} />
               </div>
             </div>
             <div className="col-sm-2 cell salary-hra-width">
               <div className="col-sm-12 salary-title">HRA</div>
               <div className="col-sm-12 salary-input-wrapper">
-                <input type="text" className="form-control input-sm" ref="hra" onChange={() => this.setState({ hra: this.refs.hra.value })} value={this.state.hra} />
+                <input name="hra" type="text" className="form-control input-sm" ref="hra" onChange={this.onValueChange} /* onChange={() => this.setState({ hra: this.refs.hra.value })} */ value={this.state.hra} />
               </div>
             </div>
             <div className="col-sm-2 cell salary-conveyance-width">
               <div className="col-sm-12 salary-title">Conveyance</div>
               <div className="col-sm-12 salary-input-wrapper">
-                <input type="text" className="form-control input-sm" ref="conveyance" onChange={() => this.setState({ conveyance: this.refs.conveyance.value })} value={this.state.conveyance} />
+                <input name="conveyance" type="text" className="form-control input-sm" ref="conveyance" onChange={this.onValueChange} /* onChange={() => this.setState({ conveyance: this.refs.conveyance.value })} */ value={this.state.conveyance} />
               </div>
             </div>
             <div className="col-sm-2 cell salary-medical-width">
               <div className="col-sm-12 salary-title">Medical Allowance</div>
               <div className="col-sm-12 salary-input-wrapper">
-                <input type="text" className="form-control input-sm" ref="medical_allowance" onChange={() => this.setState({ medical_allowance: this.refs.medical_allowance.value })} value={this.state.medical_allowance} />
+                <input name="medical_allowance" type="text" className="form-control input-sm" ref="medical_allowance" onChange={this.onValueChange} /* onChange={() => this.setState({ medical_allowance: this.refs.medical_allowance.value })} */ value={this.state.medical_allowance} />
               </div>
             </div>
             <div className="col-sm-2 cell salary-special-width">
               <div className="col-sm-12 salary-title">Special Allowance</div>
               <div className="col-sm-12 salary-input-wrapper">
-                <input type="text" className="form-control input-sm" ref="special_allowance" onChange={() => this.setState({ special_allowance: this.refs.special_allowance.value })} value={this.state.special_allowance} />
+                <input name="special_allowance" type="text" className="form-control input-sm" ref="special_allowance" onChange={this.onValueChange} /* onChange={() => this.setState({ special_allowance: this.refs.special_allowance.value })} */ value={this.state.special_allowance} />
               </div>
             </div>
             <div className="col-sm-2 cell salary-arrears-width">
               <div className="col-sm-12 salary-title">Arrears</div>
               <div className="col-sm-12 salary-input-wrapper">
-                <input type="text" className="form-control input-sm" ref="arrear" onChange={() => this.setState({ arrear: this.refs.arrear.value })} value={this.state.arrear} />
+                <input name="arrear" type="text" className="form-control input-sm" ref="arrear" onChange={this.onValueChange} /* onChange={() => this.setState({ arrear: this.refs.arrear.value })} */ value={this.state.arrear} />
               </div>
             </div>
           </div>
@@ -248,35 +259,35 @@ class AddSalaryForm extends React.Component {
             <div className="col-sm-2 cell salary-epf-width">
               <div className="col-sm-12 salary-title">EPF</div>
               <div className="col-sm-12 salary-input-wrapper">
-                <input type="text" className="form-control input-sm" ref="epf" onChange={() => this.setState({ epf: this.refs.epf.value })} value={this.state.epf} />
+                <input name="epf" type="text" className="form-control input-sm" ref="epf" onChange={this.onValueChange} /* onChange={() => this.setState({ epf: this.refs.epf.value })} */ value={this.state.epf} />
               </div>
             </div>
             <div className="col-sm-2 cell salary-loan-width">
               <div className="col-sm-12 salary-title">Loan</div>
               <div className="col-sm-12 salary-input-wrapper">
-                <input type="text" className="form-control input-sm" ref="loan" onChange={() => this.setState({ loan: this.refs.loan.value })} value={this.state.loan} />
+                <input name="loan" type="text" className="form-control input-sm" ref="loan" onChange={this.onValueChange} /* onChange={() => this.setState({ loan: this.refs.loan.value })} */ value={this.state.loan} />
               </div>
             </div>
             <div className="col-sm-2 cell salary-advance-width">
               <div className="col-sm-12 salary-title">Advance</div>
               <div className="col-sm-12 salary-input-wrapper">
-                <input type="text" className="form-control input-sm" ref="advance" onChange={() => this.setState({ advance: this.refs.advance.value })} value={this.state.advance} />
+                <input name="advance" type="text" className="form-control input-sm" ref="advance" onChange={this.onValueChange} /* onChange={() => this.setState({ advance: this.refs.advance.value })} */ value={this.state.advance} />
               </div>
             </div>
             <div className="col-sm-2 cell salary-miscdeductions-width">
               <div className="col-sm-12 salary-title">Misc Deductions</div>
               <div className="col-sm-12 salary-input-wrapper">
-                <input type="text" className="form-control input-sm" ref="misc_deduction" onChange={() => this.setState({ misc_deduction: this.refs.misc_deduction.value })} value={this.state.misc_deduction} />
+                <input name="misc_deduction" type="text" className="form-control input-sm" ref="misc_deduction" onChange={this.onValueChange} /* onChange={() => this.setState({ misc_deduction: this.refs.misc_deduction.value })} */ value={this.state.misc_deduction} />
               </div>
             </div>
             <div className="col-sm-1 cell salary-tds-width">
               <div className="col-sm-12 salary-title">TDS</div>
               <div className="col-sm-12 salary-input-wrapper">
-                <input type="text" className="form-control input-sm" ref="tds" onChange={() => this.setState({ tds: this.refs.tds.value })} value={this.state.tds} />
+                <input name="tds" type="text" className="form-control input-sm" ref="tds" onChange={this.onValueChange} /* onChange={() => this.setState({ tds: this.refs.tds.value })} */ value={this.state.tds} />
               </div>
             </div>
             <div className="col-sm-3 cell center salary-options-width">
-              <i className="material-icons add-icon" onClick={() => this.props.callAddUserSalary(this.state)}>
+              <i className="material-icons add-icon" onClick={() => this.addSalary()}>
                 add_circle_outline
               </i>
             </div>

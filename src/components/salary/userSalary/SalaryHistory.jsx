@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 const SalaryHistory = ({data, viewSalarySummary}) => {
   let salaryHistoryHtml = _.map(data, (d, key) => {
@@ -26,7 +27,7 @@ const SalaryHistory = ({data, viewSalarySummary}) => {
   )
 }
 
-SalaryHistory.PropTypes = {
+SalaryHistory.propTypes = {
   data: PropTypes.array.isRequired,
   viewSalarySummary: PropTypes.func.isRequired
 }

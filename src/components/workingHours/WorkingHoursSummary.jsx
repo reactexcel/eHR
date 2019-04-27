@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import CalendarStructure from 'components/generic/employeeMonthGrid/CalendarStructure';
+import CalendarStructure from '../../components/generic/employeeMonthGrid/CalendarStructure';
 
 const WorkingHoursSummary = ({workingHoursSummary, onWorkingHoursChange, onWorkingHoursSummary}) => {
   const _onChangeMonth = (check) => {
@@ -54,7 +54,7 @@ const WorkingHoursSummary = ({workingHoursSummary, onWorkingHoursChange, onWorki
   );
 };
 
-WorkingHoursSummary.PropTypes = {
+WorkingHoursSummary.propTypes = {
   workingHoursSummary: PropTypes.shape({
     monthSummary:  PropTypes.array.isRequired,
     previousMonth: PropTypes.object.isRequired,

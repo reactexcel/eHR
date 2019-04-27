@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import Message from 'components/generic/Message';
+import Message from '../../../components/generic/Message';
 
 class DocumentsList extends React.Component {
   constructor (props) {
@@ -58,7 +58,7 @@ class DocumentsList extends React.Component {
   }
 }
 
-DocumentsList.PropTypes = {
+DocumentsList.propTypes = {
   policyDocuments:    PropTypes.array.isRequired,
   onUpdateReadStatus: PropTypes.func.isRequired
 };

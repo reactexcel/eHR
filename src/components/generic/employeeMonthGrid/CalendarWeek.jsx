@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import $ from 'jquery';
 import Day from './Day';
 
 const CalendarWeek = ({userId, dayData, onShowDaySummary, onWorkingHoursChange}) => {
@@ -34,7 +35,7 @@ const CalendarWeek = ({userId, dayData, onShowDaySummary, onWorkingHoursChange})
   );
 };
 
-CalendarWeek.PropTypes = {
+CalendarWeek.propTypes = {
   dayData:              PropTypes.object.isRequired,
   userId:               PropTypes.number,
   onShowDaySummary:     PropTypes.func,

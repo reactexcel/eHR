@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 const ButtonInfo = ({label, style, className, onClick}) => {
   let classname = "btn btn-info " + className;
   return (
-    <button className={classname} style={style} onTouchTap={onClick}>{label}</button>
+    <button className={classname} style={style} onClick={onClick}>{label}</button>
   )
 }
 
-ButtonInfo.PropTypes = {
+ButtonInfo.propTypes = {
   label: PropTypes.string.isRequired,
   style: PropTypes.object,
   className: PropTypes.string,

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 const LeavesSummary = ({user}) => {
   let pendingPunchingDays = _.map(user.attendance, (day, key) => {
@@ -46,7 +47,7 @@ const LeavesSummary = ({user}) => {
   );
 };
 
-LeavesSummary.PropTypes = {
+LeavesSummary.propTypes = {
   user: PropTypes.shape({
     attendance: PropTypes.array.isRequired,
     name:       PropTypes.string.isRequired,

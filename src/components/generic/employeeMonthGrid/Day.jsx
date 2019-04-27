@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import * as dayType from 'appRedux/attendance/constants';
+import $ from 'jquery';
+import * as dayType from '../../../redux/attendance/constants';
 import DaySection from './DaySection';
 
 const styles = {
@@ -109,7 +110,7 @@ const Day = ({dayData, classname, forEmployeeHours, day, userid, showDaySummary,
   );
 };
 
-Day.PropTypes = {
+Day.propTypes = {
   classname:            PropTypes.string,
   forEmployeeHours:     PropTypes.bool,
   day:                  PropTypes.string,

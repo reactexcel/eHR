@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 import {Calendar} from 'react-date-range';
-import {notify} from 'src/services/notify';
-import {Button, ButtonRaised, ButtonFlat} from 'components/generic/buttons';
+import {notify} from '../../../../services/notify';
+import {Button, ButtonRaised, ButtonFlat} from '../../../../components/generic/buttons';
 import AddLeaveDocument from './AddLeaveDocument'
 
 
@@ -30,9 +31,9 @@ class ApplyLeaveForm extends React.Component {
     this.handleEndDate = this.handleEndDate.bind(this);
     this._apply_half_day_1 = this._apply_half_day_1.bind(this);
   }
-  componentDidMount () {}
 
   componentDidUpdate () {
+    window.scrollTo(0,0);
     if (this.state.form_from_date != '' && this.state.form_to_date != '' && this.state.form_no_of_days == '') {
       this.props.onDaysBetweenLeaves(this.state.form_from_date, this.state.form_to_date);
     }
@@ -243,7 +244,7 @@ class ApplyLeaveForm extends React.Component {
   }
 }
 ApplyLeaveForm.propTypes = {
-  doApplyLeave: React.PropTypes.func.isRequired,
-  applyLeave:   React.PropTypes.shape({start_date: React.PropTypes.String, end_date: React.PropTypes.String})
+  doApplyLeave: PropTypes.func.isRequired,
+  applyLeave:   PropTypes.shape({start_date: PropTypes.string, end_date: PropTypes.string})
 };
 export default ApplyLeaveForm;

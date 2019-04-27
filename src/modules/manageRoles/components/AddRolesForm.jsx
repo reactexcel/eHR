@@ -5,7 +5,7 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
-import {Button, ButtonRaised} from 'components/generic/buttons/';
+import {Button, ButtonRaised} from '../../../components/generic/buttons/';
 
 export default class AddRolesForm extends React.Component {
   constructor (props) {
@@ -96,9 +96,9 @@ export default class AddRolesForm extends React.Component {
   }
 }
 
-AddRolesForm.PropTypes = {
+AddRolesForm.propTypes = {
   displayData: PropTypes.shape({
-    roles: PropTypes.Array
+    roles: PropTypes.array
   }).isRequired,
   callAddNewRole: PropTypes.func.isRequired
 };

@@ -1,14 +1,13 @@
 import React from 'react';
 import * as _ from 'lodash';
 import PropTypes from 'prop-types';
-import {DateField} from 'react-date-picker';
-import 'react-date-picker/index.css';
-import {CONFIG} from 'src/config/index';
-import Label from 'components/generic/label';
-import InputText from 'components/generic/input/InputText';
-import Textarea from 'components/generic/input/TextArea';
-import ButtonRaised from 'components/generic/buttons/ButtonRaised';
-import {confirm} from 'src/services/notify';
+import DateField from 'react-date-picker';
+import {CONFIG} from '../../../config/index';
+import Label from '../../../components/generic/label';
+import InputText from '../../../components/generic/input/InputText';
+import Textarea from '../../../components/generic/input/TextArea';
+import ButtonRaised from '../../../components/generic/buttons/ButtonRaised';
+import {confirm} from '../../../services/notify';
 var moment = require('moment');
 
 class FormUserProfileDetails extends React.Component {
@@ -84,16 +83,17 @@ class FormUserProfileDetails extends React.Component {
     if (typeof userProfileDetail.training_month !== 'undefined' && userProfileDetail.training_month !== null) {
       training_month = userProfileDetail.training_month;
     }
-    if (typeof userProfileDetail.dateofjoining !== 'undefined' && userProfileDetail.dateofjoining != null) {
+    if (typeof userProfileDetail.dateofjoining !== 'undefined' && userProfileDetail.dateofjoining != null  && userProfileDetail.dateofjoining !== '0000-00-00') {
       var mydate = new Date(userProfileDetail.dateofjoining);
       if (mydate !== 'Invalid Date') {
-        dateofjoining = userProfileDetail.dateofjoining;
+        dateofjoining = mydate;
       }
     }
-    if (typeof userProfileDetail.dob !== 'undefined' && userProfileDetail.dob !== null) {
+    if (typeof userProfileDetail.dob !== 'undefined' && userProfileDetail.dob !== null && userProfileDetail.dob !== '0000-00-00') {
       var mydate = new Date(userProfileDetail.dob);
       if (mydate !== 'Invalid Date') {
-        dob = moment(mydate);
+        // dob = moment(mydate).format('YYYY-MM-DD');
+        dob = mydate
       }
     }
     if (typeof userProfileDetail.training_month !== 'undefined' && userProfileDetail.training_month != null) {
@@ -129,16 +129,16 @@ class FormUserProfileDetails extends React.Component {
     if (typeof userProfileDetail.work_email !== 'undefined' && userProfileDetail.work_email != null) {
       work_email = userProfileDetail.work_email;
     }
-    if (typeof userProfileDetail.training_completion_date !== 'undefined' && userProfileDetail.training_completion_date !== null) {
+    if (typeof userProfileDetail.training_completion_date !== 'undefined' && userProfileDetail.training_completion_date !== null && userProfileDetail.training_completion_date !== '0000-00-00') {
       var mydate = new Date(userProfileDetail.training_completion_date);
       if (mydate !== 'Invalid Date') {
-        training_completion_date = userProfileDetail.training_completion_date;
+        training_completion_date = mydate;
       }
     }
-    if (typeof userProfileDetail.termination_date !== 'undefined' && userProfileDetail.termination_date != null) {
+    if (typeof userProfileDetail.termination_date !== 'undefined' && userProfileDetail.termination_date !== null && userProfileDetail.termination_date !== '0000-00-00') {
       var mydate = new Date(userProfileDetail.termination_date);
       if (mydate !== 'Invalid Date') {
-        termination_date = userProfileDetail.termination_date;
+        termination_date = mydate;
       }
     }
     if (typeof userProfileDetail.holding_comments !== 'undefined' && userProfileDetail.holding_comments != null) {
@@ -182,16 +182,23 @@ class FormUserProfileDetails extends React.Component {
   }
   handleUpdateClick = () => {
     const { training_completion_date } = this.props.user_profile_detail;
-    const stateTrainingDate = this.state.training_completion_date;
+    let formObject = _.cloneDeep(this.state);
+    
+    formObject.termination_date = formObject.termination_date === "" ? "" : moment(formObject.termination_date).format('YYYY-MM-DD');
+    formObject.dateofjoining = formObject.dateofjoining === "" ? "" : moment(formObject.dateofjoining).format('YYYY-MM-DD');;
+    formObject.dob = formObject.dob === "" ? "" : moment(formObject.dob).format('YYYY-MM-DD');;
+    formObject.training_completion_date = formObject.training_completion_date === "" ? "" : moment(formObject.training_completion_date).format('YYYY-MM-DD');;
+
     if (training_completion_date === "0000-00-00" &&
-      stateTrainingDate !== training_completion_date) {
+    formObject.training_completion_date !== training_completion_date &&
+    formObject.training_completion_date !== "") {
       confirm("Has service agreement been signed?","","","No","Yes" ).then((res)=>{
         if(res){
-          this.props.callUpdateUserProfileDetails(this.state);
+          this.props.callUpdateUserProfileDetails(formObject);
         }
       })
     } else {
-      this.props.callUpdateUserProfileDetails(this.state);
+      this.props.callUpdateUserProfileDetails(formObject);
     }
   };
   render () {
@@ -199,6 +206,7 @@ class FormUserProfileDetails extends React.Component {
     let slackImg = selectedUser ? selectedUser.slack_profile.image_72 : '';  
     let teams = this.props.teamList.data.length > 0 ? this.props.teamList.data : [];
     let userLevel = this.props.loggedUser.data.role === CONFIG.ADMIN;
+    
     return <div>
         <h6 className="text-center">Personal Details</h6>
         <br />
@@ -259,9 +267,12 @@ class FormUserProfileDetails extends React.Component {
           <div className="col-xs-6 profile-input">
             <div className="form-group">
               <Label htmlfor="Date Of Birth" text={"Date Of Birth ( eg. 27/1/1988 )"} />
-              <DateField dateFormat="YYYY-MM-DD" onChange={(date, { dateMoment, timestamp }) => this.setState(
-                    { dob: dateMoment }
-                  )} value={this.state.dob} className="form-control" />
+              <DateField 
+                dateFormat="YYYY-MM-DD" 
+                onChange={(date) => this.setState({ dob: date })} 
+                value={this.state.dob} 
+                className="form-control" 
+              />
             </div>
           </div>
           <div className="col-xs-6 profile-input">
