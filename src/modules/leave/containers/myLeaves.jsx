@@ -94,8 +94,9 @@ class MyLeaves extends React.Component {
       inputValue: e.target.value
     });
   };
-
+  
   render() {
+    console.log(this.state);
     return (
       <div>
         <Menu {...this.props} />

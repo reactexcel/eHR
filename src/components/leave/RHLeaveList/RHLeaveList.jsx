@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { ButtonInfo, Button } from "components/generic/buttons";
+import { ButtonInfo, Button } from "../../../components/generic/buttons";
+// "components/generic/buttons";
 
 const RHLeavesList = ({ leave, handleApplyClick }) => {
   let s = leave.status;

@@ -4,7 +4,7 @@ import { DateField } from "react-date-picker";
 // import ButtonRaised from "components/generic/buttons/ButtonRaised";
 // import { confirm } from "src/services/notify";
 // import InputText from "components/generic/input/InputText";
-import RHLeavesList from "../../../../components/leave/RHLeaveList/ApplyModal"
+import RHLeavesList from "../../../../components/leave/RHLeaveList/RHLeaveList";
 // "../../../components/leave/RHLeaveList/RHLeaveList"
 
 class RHLeaves extends React.Component {
