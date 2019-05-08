@@ -11,7 +11,7 @@ import * as actions_myLeaves from '../../../redux/leave/actions/myLeaves';
 import RHLeaves from "../components/RHLeaves/RHLeaves";
 import { getYearArray } from "../../../services/generic";
 // "../../../services/generic";
-import { confirm } from "../../../services/notify";
+import { confirm, notify } from "../../../services/notify";
 import ApplyRHModel from "../../../components/leave/RHLeaveList/ApplyModal";
 // "../../../components/leave/RHLeaveList/ApplyModal";
 import * as actions_apply_leave from "../../../redux/leave/actions/applyLeave";
@@ -76,6 +76,9 @@ class MyLeaves extends React.Component {
         this.props.getRHList(this.year[3], id);
 
         confirm("RH is Successfully Applied", "", "success");
+      })
+      .catch(message => {
+        notify(message, "", "error");
       });
     if (this.state.inputValue) {
       this.setState({
