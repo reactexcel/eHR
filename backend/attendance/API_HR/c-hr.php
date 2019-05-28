@@ -1913,11 +1913,11 @@ class HR extends DATABASE {
             $current_year = date('Y');
             $confirm_date = $user['training_completion_date'];
             $confirm_year = date('Y', strtotime($confirm_date));
-            $confirm_quarter = self::getQuarterByMonth($confirm_month);
             $confirm_month = date('m', strtotime($user['training_completion_date']));
+            $confirm_quarter = self::getQuarterByMonth($confirm_month);
 
             if( $confirm_year == $current_year ){
-
+ 
                 $remaining_quarters = $no_of_quaters - $confirm_quarter['quarter'];
                 $eligible_for_confirm_quarter_rh = false;
                 if( $confirm_quarter['months'][0] == $confirm_month ){
@@ -1956,11 +1956,14 @@ class HR extends DATABASE {
                     }
                 }
             } else {
+                $quarters = self::getAllQuarters();
                 foreach( $rh_previous_dates as $rh_previous_date ){
                     if( strtotime($rh_previous_date) > strtotime($confirm_date) ){
                         $rh_previous_date_month = date('m', strtotime($rh_previous_date));
-                        if( $confirm_quarter['months'][0] == $rh_previous_date_month ){
-                            $count++;
+                        foreach( $quarters as $quarter ){
+                            if( $quarter[0] == $rh_previous_date_month ){
+                                $count++;
+                            }
                         }
                     }
                 }
@@ -2008,15 +2011,20 @@ class HR extends DATABASE {
         return $stats;
     }
 
-    public static function getQuarterByMonth( $month = false ) {
-        $month = $month ? $month : date('m');
-        $current_quarter = false;
+    public static function getAllQuarters(){
         $quarters = [
             1 => [ 1, 2, 3 ],
             2 => [ 4, 5, 6 ],
             3 => [ 7, 8, 9 ],
             4 => [ 10, 11, 12 ]
-        ];        
+        ];
+        return $quarters;
+    }
+
+    public static function getQuarterByMonth( $month = false ) {
+        $month = $month ? $month : date('m');
+        $current_quarter = false;
+        $quarters = self::getAllQuarters();
         foreach( $quarters as $key => $quarter ){
             if( in_array( $month, $quarter ) ){
                 $current_quarter['quarter'] = $key;
@@ -2117,6 +2125,9 @@ class HR extends DATABASE {
                             
                         } else {
                             if( $from_date_quarter['quarter'] >= $current_quarter['quarter'] ){
+                                if( $from_date_month  ){
+
+                                }
                                 if( array_key_exists( $from_date_quarter['quarter'], $rh_taken_per_quarter ) ){
                                     if( $rh_taken_per_quarter[$from_date_quarter['quarter']] > 0 ) {
                                         if( $two_rh_quarter ){
