@@ -1969,21 +1969,24 @@ class HR extends DATABASE {
                 }
             }
             
-            $rh_compensation_used = sizeof($rh_compensation_leaves);
-            $total_rh_taken = $rh_approved + $rh_compensation_used;
-            if( $total_rh_taken < $rh_can_be_taken ){
-                $rh_left = $rh_can_be_taken - $total_rh_taken;
-                $rh_compensation_pending = $count - $rh_compensation_used;
-                if( $rh_compensation_pending < 0 ){
-                    $rh_compensation_pending = 0;
-                }
-            }
-            if( sizeof($rh_leaves) > 0 ){
+            $rh_compensation_used = sizeof($rh_compensation_leaves);            
+            if( sizeof($rh_leaves) > 0 || sizeof($rh_compensation_leaves) > 0 ){
                 foreach( $rh_leaves as $rh_leave ){
                     if( strtolower($rh_leave['status']) == 'rejected' ){
                         $rh_rejected++;
                     }
-                }                
+                }
+                $total_rh_taken = $rh_approved + $rh_compensation_used;
+                $rh_left = $rh_can_be_taken - $total_rh_taken;
+                if( $rh_rejected > $rh_left ){
+                    $rejected_rh_for_compensation = $rh_left;
+                } else {
+                    $rejected_rh_for_compensation = $rh_rejected;
+                }
+                $rh_compensation_pending = $count - $rh_compensation_used + $rejected_rh_for_compensation;
+                if( $rh_compensation_pending <= 0 ){
+                    $rh_compensation_pending = $rejected_rh_for_compensation;
+                }
     
             } else {
                 $rh_left = $rh_can_be_taken;
@@ -2057,12 +2060,14 @@ class HR extends DATABASE {
             $confirm_month = date('m', strtotime($user['training_completion_date']));
             $confirm_quarter = self::getQuarterByMonth($confirm_month);
             $from_date_quarter = self::getQuarterByMonth( $from_date_month );
+            $rh_leaves_all = self::getUserRHLeaves($userid, $current_year);
             $rh_list = array_map( function($iter){ return $iter['raw_date']; }, self::getMyRHLeaves($current_year) );
-            $rh_leaves = array_map( function($iter){ return $iter['from_date']; }, self::getUserRHLeaves($userid, $current_year) );
+            $rh_leaves = array_map( function($iter){ return $iter['from_date']; }, $rh_leaves_all );
             $rh_approved = array_map( function($iter){ return $iter['from_date']; }, self::getUserApprovedRHLeaves($userid, $current_year) );
             $rh_compensated = array_map( function($iter){ return $iter['from_date']; }, self::getUserRHCompensationLeaves($userid, $current_year) );
             $total_rh_taken = sizeof($rh_approved) + sizeof($rh_compensated);
             
+            $apply_next_rh = true;
             $two_rh_quarter = false;
             $rh_taken_per_quarter = [];
             foreach( $rh_approved as $rh_approve ){
@@ -2079,6 +2084,14 @@ class HR extends DATABASE {
                     break;
                 }
             }
+            if( sizeof($rh_leaves_all) > 0 ){
+                foreach( $rh_leaves_all as $rh_leave ){
+                    if( strtolower($rh_leave['status']) == 'pending' ){
+                        $apply_next_rh = false;
+                        break;
+                    }
+                }
+            }
             
             if( $from_date_year < $current_year || strtotime($from_date) < strtotime($current_date) ){
                 $message = 'You cannot apply previous RH.';                
@@ -2086,66 +2099,79 @@ class HR extends DATABASE {
             } else {
                 
                 if( in_array( $from_date, $rh_list ) ){
-                    if( $confirm_year != $current_year ){ 
-                        if( $total_rh_taken >= $rh_can_be_taken ){
-                            $message = 'You have reached the RH quota. You are not eligible for other RH this year.';
-                            
-                        } else {
-                            if( $from_date_quarter['quarter'] >= $current_quarter['quarter'] ){
-                                if( array_key_exists( $from_date_quarter['quarter'], $rh_taken_per_quarter ) ){
-                                    if( $rh_taken_per_quarter[$from_date_quarter['quarter']] > 0 ) {
-                                        if( $two_rh_quarter ){
-                                            $message = 'You are not allowed take 2nd RH this quarter as you have taken 2 RH already in single quarter.';
-                                        } else {
-                                            $check = true;
+
+                    if( $apply_next_rh ){
+
+                        if( $confirm_year != $current_year ){ 
+                            if( $total_rh_taken >= $rh_can_be_taken ){
+                                $message = 'You have reached the RH quota. You are not eligible for other RH this year.';
+                                
+                            } else {
+                                if( $from_date_quarter['quarter'] >= $current_quarter['quarter'] ){
+                                    if( array_key_exists( $from_date_quarter['quarter'], $rh_taken_per_quarter ) ){
+                                        if( $rh_taken_per_quarter[$from_date_quarter['quarter']] > 0 ) {
+                                            if( $two_rh_quarter ){
+                                                $message = 'You are not allowed take 2nd RH this quarter as you have taken 2 RH already in single quarter.';
+                                            } else {
+                                                $check = true;
+                                            }
                                         }
+                                    } else {
+                                        $check = true;
                                     }
                                 } else {
-                                    $check = true;
+                                    $message = 'You cannot apply previous quarter RH.';
                                 }
+                            }
+                        } else {
+    
+                            $remaining_quarters = $no_of_quaters - $confirm_quarter['quarter'];
+                            $eligible_for_confirm_quarter_rh = false;
+                            if( $confirm_quarter['months'][0] == $confirm_month ){
+                                $eligible_for_confirm_quarter_rh = true;
+                            }
+                            if( $eligible_for_confirm_quarter_rh ){
+                                $rh_can_be_taken = $remaining_quarters + 2;
                             } else {
-                                $message = 'You cannot apply previous quarter RH.';
+                                $rh_can_be_taken = $remaining_quarters + 1;
+                            }
+    
+                            if( $total_rh_taken >= $rh_can_be_taken ){
+                                $message = 'You have reached the RH quota. You are not eligible for other RH this year.';
+                                
+                            } else {
+                                if( $from_date_quarter['quarter'] >= $current_quarter['quarter'] ){
+                                    if( array_key_exists( $from_date_quarter['quarter'], $rh_taken_per_quarter ) ){
+                                        if( $rh_taken_per_quarter[$from_date_quarter['quarter']] > 0 ) {
+                                            if( $two_rh_quarter ){
+                                                $message = 'You are not allowed take 2nd RH this quarter as you have taken 2 RH already in single quarter.';
+                                            } else {
+                                                $check = true;
+                                            }
+                                        }
+                                    } else {
+                                        if( $from_date_quarter['quarter'] == $confirm_quarter['quarter'] ){
+                                            if( $eligible_for_confirm_quarter_rh ){
+                                                $check = true;
+                                            } else {
+                                                $message = "You are not eligible for current quarter RH.";
+                                            }
+                                        } else {
+                                            $check = true;                                    
+                                        }                                    
+                                    }
+                                } else {
+                                    $message = 'You cannot apply previous quarter RH.';
+                                }
                             }
                         }
+
                     } else {
-
-                        $remaining_quarters = $no_of_quaters - $confirm_quarter['quarter'];
-                        $eligible_for_confirm_quarter_rh = false;
-                        if( $confirm_quarter['months'][0] == $confirm_month ){
-                            $eligible_for_confirm_quarter_rh = true;
-                        }
-                        if( $eligible_for_confirm_quarter_rh ){
-                            $rh_can_be_taken = $remaining_quarters + 2;
-                        } else {
-                            $rh_can_be_taken = $remaining_quarters + 1;
-                        }
-
-                        if( $total_rh_taken >= $rh_can_be_taken ){
-                            $message = 'You have reached the RH quota. You are not eligible for other RH this year.';
-                            
-                        } else {
-                            if( $from_date_quarter['quarter'] >= $current_quarter['quarter'] ){
-                                if( $from_date_month  ){
-
-                                }
-                                if( array_key_exists( $from_date_quarter['quarter'], $rh_taken_per_quarter ) ){
-                                    if( $rh_taken_per_quarter[$from_date_quarter['quarter']] > 0 ) {
-                                        if( $two_rh_quarter ){
-                                            $message = 'You are not allowed take 2nd RH this quarter as you have taken 2 RH already in single quarter.';
-                                        } else {
-                                            $check = true;
-                                        }
-                                    }
-                                } else {
-                                    $check = true;
-                                }
-                            } else {
-                                $message = 'You cannot apply previous quarter RH.';
-                            }
-                        }
+                        $message = "Your previous RH status is pending. Contact admin.";
                     }
+
                 } else {
-                    $message = 'The date is not yet added in the RH list.';
+                    $message = "The date is not yet added in the RH list.";
                 } 
             }
 
