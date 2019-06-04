@@ -2302,7 +2302,7 @@ class HR extends DATABASE {
             ////send  slack message to user && HR
             $userInfo = self::getUserInfo($userid);
             $userInfo_name = $userInfo['name'];
-            $slack_userChannelid = $userInfo['slack_profile']['slack_channel_id'];
+            $slack_userChannelid = $userInfo['slack_profile']['id'];
 
             if ($day_status == "2") {
                 $message_to_user = "Hi $userInfo_name !!  \n You just had applied for second half days of leave from $from_date to $to_date. \n Reason mentioned : $reason  \n $alert_message";
@@ -2321,7 +2321,7 @@ class HR extends DATABASE {
             }
 
             $slackMessageStatus = self::sendSlackMessageToUser($slack_userChannelid, $message_to_user);
-            $slackMessageStatus = self::sendSlackMessageToUser("hr", $message_to_hr);
+            $slackMessageStatus = self::sendSlackMessageToUser("hr_system", $message_to_hr);
         }
         $return = array();
         $r_data = array();
@@ -2830,7 +2830,7 @@ class HR extends DATABASE {
         $userInfo = self::getUserInfo($userid);
         $userInfo_name = $userInfo['name'];
         $role_id = $userInfo['role_id'];
-        $slack_userChannelid = $userInfo['slack_profile']['slack_channel_id'];
+        $slack_userChannelid = $userInfo['slack_profile']['id'];
 
         $beautyDate = date('d-M-Y', strtotime($date));
 
@@ -2838,7 +2838,7 @@ class HR extends DATABASE {
         $message_to_hr = "Hi HR !!  \n $userInfo_name working hours is updated for date $beautyDate to $working_hours Hours \n Reason - $reason ";
 
         $slackMessageStatus = self::sendSlackMessageToUser($slack_userChannelid, $message_to_user);
-        $slackMessageStatus = self::sendSlackMessageToUser("hr", $message_to_hr);
+        $slackMessageStatus = self::sendSlackMessageToUser("hr_system", $message_to_hr);
 
         if ($pending_id != false) {
             $q = "Select * from users_previous_month_time where id = $pending_id";
