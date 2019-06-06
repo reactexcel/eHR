@@ -2240,7 +2240,7 @@ class HR extends DATABASE {
         return $return;
     }
 
-    public static function applyLeave($userid, $from_date, $to_date, $no_of_days, $reason, $day_status, $leave_type, $late_reason, $pending_id = false) {
+    public static function applyLeave($userid, $from_date, $to_date, $no_of_days, $reason, $day_status, $leave_type, $late_reason, $pending_id = false, $doc_link = false) {
         //date format = Y-m-d
         $db = self::getInstance();
         $mysqli = $db->getConnection();
@@ -2270,7 +2270,7 @@ class HR extends DATABASE {
         
         $applied_date = date('Y-m-d');
         $reason = self::DBescapeString($reason);
-        $q = "INSERT into leaves ( user_Id, from_date, to_date, no_of_days, reason, status, applied_on, day_status,leave_type,late_reason ) VALUES ( $userid, '$from_date', '$to_date', $no_of_days, '$reason', 'Pending', '$applied_date', '$day_status','$leave_type','$late_reason' )";
+        $q = "INSERT into leaves ( user_Id, from_date, to_date, no_of_days, reason, status, applied_on, day_status,leave_type,late_reason, doc_link ) VALUES ( $userid, '$from_date', '$to_date', $no_of_days, '$reason', 'Pending', '$applied_date', '$day_status','$leave_type','$late_reason', '$doc_link' )";
 
         $r_error = 0;
         $r_message = "";
@@ -2318,6 +2318,11 @@ class HR extends DATABASE {
             if ($late_reason != "") {
                 $message_to_user.="\nLate Reason: $late_reason";
                 $message_to_hr.="\nLate Reason: $late_reason";
+            }
+
+            if($doc_link != ""){
+                $message_to_user .= "\n Document Uploaded: " . $doc_link;
+                $message_to_hr .= "\n Document Uploaded: " . $doc_link;
             }
 
             $slackMessageStatus = self::sendSlackMessageToUser($slack_userChannelid, $message_to_user);
